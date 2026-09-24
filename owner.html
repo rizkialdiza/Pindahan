@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - Elegant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-body: #f7f7f8; --bg-card: #ffffff; --text-main: #111111; --text-muted: #666666; --border: #e5e5e5; --accent: #111111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .container { background: var(--bg-card); padding: 35px; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
+        h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+        .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
+
+        /* Menu Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; background: #f0f0f0; padding: 5px; border-radius: 10px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; color: var(--text-muted); }
+        .tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fade 0.3s; }
+        @keyframes fade { from {opacity: 0;} to {opacity: 1;} }
+
+        /* Form Input */
+        .input-group { margin-bottom: 20px; }
+        label { font-size: 13px; font-weight: 500; color: var(--text-main); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, textarea { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,17,17,0.05); }
+        
+        .btn-submit { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+        .btn-submit:hover { background: #333; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Kelola Stok List */
+        .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
+        .item-info { display: flex; align-items: center; gap: 15px; }
+        .item-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; background: #eee; }
+        .item-title { font-size: 14px; font-weight: 500; }
+        .item-status { font-size: 12px; color: var(--text-muted); }
+        
+        /* Toggle Button */
+        .toggle-btn { padding: 8px 16px; border: none; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .toggle-ready { background: #dcfce7; color: #166534; }
+        .toggle-off { background: #fee2e2; color: #991b1b; }
+
+        #toast { visibility: hidden; min-width: 250px; background: #111; color: #fff; text-align: center; border-radius: 8px; padding: 14px; position: fixed; bottom: 40px; transform: translateX(-50%); left: 50%; z-index: 1000;}
+        #toast.show { visibility: visible; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Katalog Manajemen</h2>
+        <div class="subtitle">Kelola etalase dan stok produk Anda.</div>
+        
+        <!-- Tab Menu -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('upload')">Tambah Produk</button>
+            <button class="tab-btn" onclick="switchTab('stock'); loadStock();">Kelola Stok</button>
+        </div>
+
+        <!-- TAB 1: UPLOAD -->
+        <div id="tab-upload" class="tab-content active">
+            <form id="formProduk">
+                <div class="input-group">
+                    <label>Nama Produk</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="input-group">
+                    <label>Harga (IDR)</label>
+                    <input type="number" id="price" required>
+                </div>
+                <div class="input-group">
+                    <label>Foto Produk</label>
+                    <input type="file" id="imageFiles" accept="image/*" multiple required>
+                </div>
+                <div class="input-group">
+                    <label>Deskripsi</label>
+                    <textarea id="desc" rows="3" required></textarea>
+                </div>
+                <button type="submit" id="btn-submit" class="btn-submit">Simpan Produk</button>
+            </form>
+        </div>
+
+        <!-- TAB 2: KELOLA STOK -->
+        <div id="tab-stock" class="tab-content">
+            <div id="stock-list"><p style="text-align:center; font-size: 14px; color: #666;">Memuat data stok...</p></div>
+        </div>
+    </div>
+
+    <div id="toast">Notifikasi</div>
+
+    <script>
+        // MASUKKAN URL API BARU ANDA
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzPwfCfKqPP6Ylu8yBs5tIGJVA4dVGG8360iPjkazyWfoJdkVTWHjH-DQ6xduw3ppVY7Q/exec';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg; toast.className = "show";
+            setTimeout(() => toast.className = "", 3000);
+        }
+
+        const compressImage = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = (e) => {
+                const img = new Image(); img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 800; let w = img.width, h = img.height;
+                    if (w > h && w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } 
+                    else if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve({ filename: file.name, mimeType: 'image/jpeg', base64: canvas.toDataURL('image/jpeg', 0.6).split(',')[1] });
+                };
+            };
+        });
+
+        // Simpan Produk Baru
+        document.getElementById('formProduk').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            btn.innerText = 'Memproses...'; btn.disabled = true;
+
+            try {
+                const fileInput = document.getElementById('imageFiles');
+                let imagesData = await Promise.all(Array.from(fileInput.files).map(f => compressImage(f)));
+                const payload = { action: 'create', name: document.getElementById('name').value, price: document.getElementById('price').value, desc: document.getElementById('desc').value, images: imagesData };
+                
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                showToast('Produk berhasil ditambahkan!');
+                document.getElementById('formProduk').reset();
+            } catch (error) { showToast('Gagal memproses jaringan.'); } 
+            finally { btn.innerText = 'Simpan Produk'; btn.disabled = false; }
+        });
+
+        // Tampilkan Data Stok
+        async function loadStock() {
+            const list = document.getElementById('stock-list');
+            list.innerHTML = '<p style="text-align:center; font-size: 14px;">Memuat data stok...</p>';
+            try {
+                const res = await fetch(`${API_URL}?t=${new Date().getTime()}`);
+                const data = await res.json();
+                list.innerHTML = '';
+                if(data.length === 0) return list.innerHTML = '<p style="text-align:center;">Belum ada produk.</p>';
+
+                data.reverse().forEach(p => {
+                    let thumb = p.image ? p.image.split('|')[0] : '';
+                    let isReady = p.status !== 'Kosong';
+                    
+                    list.innerHTML += `
+                        <div class="stock-item">
+                            <div class="item-info">
+                                <img src="${thumb}" class="item-img" onerror="this.src='https://via.placeholder.com/50'">
+                                <div>
+                                    <div class="item-title">${p.name}</div>
+                                    <div class="item-status">Status: ${p.status}</div>
+                                </div>
+                            </div>
+                            <button class="toggle-btn ${isReady ? 'toggle-ready' : 'toggle-off'}" 
+                                onclick="updateStock('${p.id}', '${isReady ? 'Kosong' : 'Ready'}', this)">
+                                ${isReady ? 'Set Habis' : 'Set Ready'}
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (e) { list.innerHTML = '<p style="text-align:center;">Gagal memuat.</p>'; }
+        }
+
+        // Fungsi Mematikan/Menyalakan Stok
+        async function updateStock(id, newStatus, btnElement) {
+            btnElement.innerText = 'Loading...';
+            btnElement.disabled = true;
+            try {
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'update_status', id: id, status: newStatus }) });
+                showToast(`Stok diubah menjadi ${newStatus}`);
+                loadStock(); // Refresh daftar stok
+            } catch (e) {
+                showToast('Gagal mengubah stok.');
+                btnElement.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
