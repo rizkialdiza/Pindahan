@@ -14,7 +14,6 @@
         h2 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
         .subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 25px; }
 
-        /* Menu Tabs */
         .tabs { display: flex; gap: 10px; margin-bottom: 30px; background: #f0f0f0; padding: 5px; border-radius: 10px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; color: var(--text-muted); }
         .tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
@@ -23,27 +22,27 @@
         .tab-content.active { display: block; animation: fade 0.3s; }
         @keyframes fade { from {opacity: 0;} to {opacity: 1;} }
 
-        /* Form Input */
         .input-group { margin-bottom: 20px; }
-        label { font-size: 13px; font-weight: 500; color: var(--text-main); margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+        label { font-size: 13px; font-weight: 500; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
         input, textarea { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
         input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(17,17,17,0.05); }
         
         .btn-submit { width: 100%; padding: 16px; background: var(--accent); color: #fff; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .btn-submit:hover { background: #333; }
-        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-
-        /* Kelola Stok List */
-        .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; }
-        .item-info { display: flex; align-items: center; gap: 15px; }
-        .item-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; background: #eee; }
-        .item-title { font-size: 14px; font-weight: 500; }
-        .item-status { font-size: 12px; color: var(--text-muted); }
         
-        /* Toggle Button */
-        .toggle-btn { padding: 8px 16px; border: none; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .toggle-ready { background: #dcfce7; color: #166534; }
-        .toggle-off { background: #fee2e2; color: #991b1b; }
+        /* Kelola Stok List */
+        .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; gap: 10px;}
+        .item-info { display: flex; align-items: center; gap: 12px; flex: 1; }
+        .item-img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; background: #eee; }
+        .item-title { font-size: 14px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
+        
+        /* Grup Tombol Status */
+        .status-controls { display: flex; flex-direction: column; gap: 4px; }
+        .btn-status { padding: 6px 12px; font-size: 11px; font-weight: 600; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; background: #fff; color: #666; transition: 0.2s;}
+        
+        /* Warna saat Aktif */
+        .btn-status.active-Ready { background: #dcfce7; color: #166534; border-color: #166534; }
+        .btn-status.active-Presale { background: #fef08a; color: #854d0e; border-color: #854d0e; }
+        .btn-status.active-Kosong { background: #fee2e2; color: #991b1b; border-color: #991b1b; }
 
         #toast { visibility: hidden; min-width: 250px; background: #111; color: #fff; text-align: center; border-radius: 8px; padding: 14px; position: fixed; bottom: 40px; transform: translateX(-50%); left: 50%; z-index: 1000;}
         #toast.show { visibility: visible; }
@@ -55,13 +54,12 @@
         <h2>Katalog Manajemen</h2>
         <div class="subtitle">Kelola etalase dan stok produk Anda.</div>
         
-        <!-- Tab Menu -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('upload')">Tambah Produk</button>
             <button class="tab-btn" onclick="switchTab('stock'); loadStock();">Kelola Stok</button>
         </div>
 
-        <!-- TAB 1: UPLOAD -->
+        <!-- TAB UPLOAD -->
         <div id="tab-upload" class="tab-content active">
             <form id="formProduk">
                 <div class="input-group">
@@ -84,7 +82,7 @@
             </form>
         </div>
 
-        <!-- TAB 2: KELOLA STOK -->
+        <!-- TAB KELOLA STOK -->
         <div id="tab-stock" class="tab-content">
             <div id="stock-list"><p style="text-align:center; font-size: 14px; color: #666;">Memuat data stok...</p></div>
         </div>
@@ -93,7 +91,7 @@
     <div id="toast">Notifikasi</div>
 
     <script>
-        // MASUKKAN URL API BARU ANDA
+        // API URL ANDA
         const API_URL = 'https://script.google.com/macros/s/AKfycbzPwfCfKqPP6Ylu8yBs5tIGJVA4dVGG8360iPjkazyWfoJdkVTWHjH-DQ6xduw3ppVY7Q/exec';
 
         function switchTab(tab) {
@@ -115,9 +113,9 @@
                 const img = new Image(); img.src = e.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_SIZE = 800; let w = img.width, h = img.height;
-                    if (w > h && w > MAX_SIZE) { h *= MAX_SIZE / w; w = MAX_SIZE; } 
-                    else if (h > MAX_SIZE) { w *= MAX_SIZE / h; h = MAX_SIZE; }
+                    let w = img.width, h = img.height;
+                    if (w > h && w > 800) { h *= 800 / w; w = 800; } 
+                    else if (h > 800) { w *= 800 / h; h = 800; }
                     canvas.width = w; canvas.height = h;
                     canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                     resolve({ filename: file.name, mimeType: 'image/jpeg', base64: canvas.toDataURL('image/jpeg', 0.6).split(',')[1] });
@@ -125,7 +123,6 @@
             };
         });
 
-        // Simpan Produk Baru
         document.getElementById('formProduk').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btn-submit');
@@ -143,7 +140,6 @@
             finally { btn.innerText = 'Simpan Produk'; btn.disabled = false; }
         });
 
-        // Tampilkan Data Stok
         async function loadStock() {
             const list = document.getElementById('stock-list');
             list.innerHTML = '<p style="text-align:center; font-size: 14px;">Memuat data stok...</p>';
@@ -155,7 +151,7 @@
 
                 data.reverse().forEach(p => {
                     let thumb = p.image ? p.image.split('|')[0] : '';
-                    let isReady = p.status !== 'Kosong';
+                    let status = p.status || 'Ready'; 
                     
                     list.innerHTML += `
                         <div class="stock-item">
@@ -163,30 +159,29 @@
                                 <img src="${thumb}" class="item-img" onerror="this.src='https://via.placeholder.com/50'">
                                 <div>
                                     <div class="item-title">${p.name}</div>
-                                    <div class="item-status">Status: ${p.status}</div>
                                 </div>
                             </div>
-                            <button class="toggle-btn ${isReady ? 'toggle-ready' : 'toggle-off'}" 
-                                onclick="updateStock('${p.id}', '${isReady ? 'Kosong' : 'Ready'}', this)">
-                                ${isReady ? 'Set Habis' : 'Set Ready'}
-                            </button>
+                            <div class="status-controls">
+                                <button class="btn-status ${status === 'Ready' ? 'active-Ready' : ''}" onclick="updateStock('${p.id}', 'Ready', this)">Ready</button>
+                                <button class="btn-status ${status === 'Presale' ? 'active-Presale' : ''}" onclick="updateStock('${p.id}', 'Presale', this)">Presale</button>
+                                <button class="btn-status ${status === 'Kosong' ? 'active-Kosong' : ''}" onclick="updateStock('${p.id}', 'Kosong', this)">Habis</button>
+                            </div>
                         </div>
                     `;
                 });
             } catch (e) { list.innerHTML = '<p style="text-align:center;">Gagal memuat.</p>'; }
         }
 
-        // Fungsi Mematikan/Menyalakan Stok
         async function updateStock(id, newStatus, btnElement) {
-            btnElement.innerText = 'Loading...';
-            btnElement.disabled = true;
+            const originalText = btnElement.innerText;
+            btnElement.innerText = '...';
             try {
                 await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'update_status', id: id, status: newStatus }) });
-                showToast(`Stok diubah menjadi ${newStatus}`);
-                loadStock(); // Refresh daftar stok
+                showToast(`Status diubah menjadi ${newStatus}`);
+                loadStock(); 
             } catch (e) {
                 showToast('Gagal mengubah stok.');
-                btnElement.disabled = false;
+                btnElement.innerText = originalText;
             }
         }
     </script>
