@@ -23,9 +23,12 @@
         .card-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
         .card-price { font-size: 16px; font-weight: 700; margin-top: auto;}
 
-        /* STYLING UNTUK BARANG HABIS */
-        .card.out-of-stock { opacity: 0.6; filter: grayscale(80%); pointer-events: none; } /* Kartu jadi mati dan tidak bisa diklik */
-        .badge-habis { position: absolute; top: 10px; right: 10px; background: #dc2626; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; z-index: 2; }
+        /* STYLING STATUS BARANG */
+        .card.out-of-stock { opacity: 0.6; filter: grayscale(80%); pointer-events: none; } 
+        
+        .badge { position: absolute; top: 10px; right: 10px; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; z-index: 2; }
+        .badge-habis { background: #dc2626; } /* Merah */
+        .badge-presale { background: #d97706; } /* Emas/Orange */
 
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
@@ -78,7 +81,9 @@
 
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbzPwfCfKqPP6Ylu8yBs5tIGJVA4dVGG8360iPjkazyWfoJdkVTWHjH-DQ6xduw3ppVY7Q/exec';
-        const NOMOR_WA = "6281234567890"; // GANTI NOMOR WA
+        
+        // ===== NOMOR WHATSAPP SUDAH DIUPDATE =====
+        const NOMOR_WA = "6281360171337"; 
 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
 
@@ -94,15 +99,24 @@
                     const hrg = formatRupiah(produk.price);
                     const thumb = produk.image ? produk.image.split('|')[0] : ""; 
                     
-                    // CEK STATUS BARANG
+                    // BACA STATUS
                     const isHabis = produk.status === "Kosong";
+                    const isPresale = produk.status === "Presale";
+
+                    // Buat Badge HTML
+                    let badgeHtml = '';
+                    if (isHabis) {
+                        badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>';
+                    } else if (isPresale) {
+                        badgeHtml = '<div class="badge badge-presale">PRESALE</div>';
+                    }
 
                     const card = document.createElement('div');
-                    // Jika barang habis, tambahkan class out-of-stock
+                    // Jika habis, matikan kartu
                     card.className = `card ${isHabis ? 'out-of-stock' : ''}`;
                     
                     card.innerHTML = `
-                        ${isHabis ? '<div class="badge-habis">STOK HABIS</div>' : ''}
+                        ${badgeHtml}
                         <div class="card-img-wrapper">
                             <img src="${thumb}">
                         </div>
@@ -112,9 +126,9 @@
                         </div>
                     `;
 
-                    // Barang hanya bisa diklik jika stok Ready
+                    // Bisa diklik jika TIDAK habis
                     if(!isHabis) {
-                        card.addEventListener('click', () => openModal(produk, hrg, thumb));
+                        card.addEventListener('click', () => openModal(produk, hrg, thumb, isPresale));
                     }
                     container.appendChild(card);
                 });
@@ -122,14 +136,25 @@
         }
 
         const modal = document.getElementById('product-modal');
-        function openModal(produk, hrg, imgSrc) {
+        
+        function openModal(produk, hrg, imgSrc, isPresale) {
             document.getElementById('modal-img').src = imgSrc;
             document.getElementById('modal-title').innerText = produk.name;
             document.getElementById('modal-price').innerText = hrg;
             document.getElementById('modal-desc').innerText = produk.desc;
-            document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(`Halo, saya mau pesan:\n\n*${produk.name}*\nHarga:${hrg}`)}`;
+            
+            // BEDA TEKS WA JIKA PRESALE
+            let textWA = '';
+            if(isPresale) {
+                textWA = `Halo, saya tertarik untuk ikut PRE-ORDER / PRESALE:\n\n*${produk.name}*\nHarga: ${hrg}\n\nBagaimana sistem PO-nya?`;
+            } else {
+                textWA = `Halo, saya mau pesan:\n\n*${produk.name}*\nHarga: ${hrg}`;
+            }
+
+            document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
             modal.style.display = 'flex';
         }
+
         function closeModal() { modal.style.display = 'none'; }
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
