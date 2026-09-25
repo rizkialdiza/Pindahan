@@ -27,20 +27,26 @@
         .card.out-of-stock { opacity: 0.6; filter: grayscale(80%); pointer-events: none; } 
         
         .badge { position: absolute; top: 10px; right: 10px; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; z-index: 2; }
-        .badge-habis { background: #dc2626; } /* Merah */
-        .badge-presale { background: #d97706; } /* Emas/Orange */
+        .badge-habis { background: #dc2626; } 
+        .badge-presale { background: #d97706; } 
+        .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
 
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
-        /* Modal */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.5); z-index: 1000; align-items: flex-end; justify-content: center; animation: fadeIn 0.3s; }
+        /* Modal Popup */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.6); backdrop-filter: blur(2px); z-index: 1000; align-items: flex-end; justify-content: center; animation: fadeIn 0.3s; }
         .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
+        /* Area Slider / Gambar Banyak */
         .modal-header-img { position: relative; width: 100%; aspect-ratio: 1/1; background: #f9f9f9; border-radius: 24px 24px 0 0; overflow: hidden; }
-        .modal-header-img img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-close { position: absolute; top: 15px; right: 15px; background: #fff; width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+        .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; }
+        .image-slider::-webkit-scrollbar { display: none; }
+        .image-slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; }
+        
+        .swipe-hint { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; z-index: 10; pointer-events: none;}
+        .btn-close { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
         
         .modal-body { padding: 24px; padding-bottom: 100px; overflow-y: auto;}
         .modal-price { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
@@ -61,11 +67,16 @@
         <div class="status-text">Memuat produk... ⏳</div>
     </main>
 
+    <!-- Modal Produk -->
     <div class="modal-overlay" id="product-modal">
         <div class="modal-content">
             <div class="modal-header-img">
                 <button class="btn-close" onclick="closeModal()">&times;</button>
-                <img id="modal-img" src="" alt="Produk Detail">
+                <!-- Kontainer Slider Gambar -->
+                <div class="image-slider" id="modal-slider">
+                    <!-- Gambar akan dimunculkan di sini -->
+                </div>
+                <div id="swipe-hint" class="swipe-hint">Geser foto ↔️</div>
             </div>
             <div class="modal-body">
                 <div class="modal-price" id="modal-price"></div>
@@ -80,9 +91,7 @@
     </div>
 
     <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbzPwfCfKqPP6Ylu8yBs5tIGJVA4dVGG8360iPjkazyWfoJdkVTWHjH-DQ6xduw3ppVY7Q/exec';
-        
-        // ===== NOMOR WHATSAPP SUDAH DIUPDATE =====
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwiWOMfOnoa1pjnVm9UefBhlGSH0mppuip16ui1H01W1Hixd4XwJRP-vZ36fl4-iFc9vw/exec';
         const NOMOR_WA = "6281360171337"; 
 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
@@ -97,28 +106,26 @@
 
                 data.reverse().forEach(produk => {
                     const hrg = formatRupiah(produk.price);
-                    const thumb = produk.image ? produk.image.split('|')[0] : ""; 
+                    // Pisahkan semua gambar menggunakan pemisah |
+                    let images = produk.image ? produk.image.split('|').map(url => url.trim()) : [];
+                    let thumb = images[0] ? images[0] : ""; 
+                    let isMultiple = images.length > 1; // Cek apakah foto lebih dari 1
                     
-                    // BACA STATUS
                     const isHabis = produk.status === "Kosong";
                     const isPresale = produk.status === "Presale";
 
-                    // Buat Badge HTML
                     let badgeHtml = '';
-                    if (isHabis) {
-                        badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>';
-                    } else if (isPresale) {
-                        badgeHtml = '<div class="badge badge-presale">PRESALE</div>';
-                    }
+                    if (isHabis) { badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>'; } 
+                    else if (isPresale) { badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; }
 
                     const card = document.createElement('div');
-                    // Jika habis, matikan kartu
                     card.className = `card ${isHabis ? 'out-of-stock' : ''}`;
                     
                     card.innerHTML = `
                         ${badgeHtml}
                         <div class="card-img-wrapper">
                             <img src="${thumb}">
+                            ${isMultiple ? '<div class="badge-banyak-foto">Ada ' + images.length + ' Foto</div>' : ''}
                         </div>
                         <div class="card-content">
                             <div class="card-title">${produk.name}</div>
@@ -126,9 +133,9 @@
                         </div>
                     `;
 
-                    // Bisa diklik jika TIDAK habis
                     if(!isHabis) {
-                        card.addEventListener('click', () => openModal(produk, hrg, thumb, isPresale));
+                        // Kirimkan array gambar lengkap (bukan cuma thumb) ke fungsi openModal
+                        card.addEventListener('click', () => openModal(produk, hrg, images, isPresale));
                     }
                     container.appendChild(card);
                 });
@@ -137,13 +144,21 @@
 
         const modal = document.getElementById('product-modal');
         
-        function openModal(produk, hrg, imgSrc, isPresale) {
-            document.getElementById('modal-img').src = imgSrc;
+        function openModal(produk, hrg, images, isPresale) {
+            // Render semua foto ke dalam slider
+            let sliderHtml = '';
+            images.forEach(imgSrc => {
+                if(imgSrc) sliderHtml += `<img src="${imgSrc}" onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Error'">`;
+            });
+            document.getElementById('modal-slider').innerHTML = sliderHtml;
+            
+            // Tampilkan/Sembunyikan hint "Geser foto" jika foto cuma 1
+            document.getElementById('swipe-hint').style.display = images.length > 1 ? 'block' : 'none';
+
             document.getElementById('modal-title').innerText = produk.name;
             document.getElementById('modal-price').innerText = hrg;
             document.getElementById('modal-desc').innerText = produk.desc;
             
-            // BEDA TEKS WA JIKA PRESALE
             let textWA = '';
             if(isPresale) {
                 textWA = `Halo, saya tertarik untuk ikut PRE-ORDER / PRESALE:\n\n*${produk.name}*\nHarga: ${hrg}\n\nBagaimana sistem PO-nya?`;
