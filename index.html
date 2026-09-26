@@ -17,44 +17,46 @@
         
         .card { background: #fff; border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #f0f0f0; display: flex; flex-direction: column;}
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .card-img-wrapper { position: relative; width: 100%; padding-top: 100%; }
-        .card-img-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .card-img-wrapper { position: relative; width: 100%; padding-top: 100%; background: #f0f0f0;}
+        .card-img-wrapper img, .card-img-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column;}
         .card-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
         .card-price { font-size: 16px; font-weight: 700; margin-top: auto;}
 
-        /* STYLING STATUS BARANG */
         .card.out-of-stock { opacity: 0.6; filter: grayscale(80%); pointer-events: none; } 
-        
-        .badge { position: absolute; top: 10px; right: 10px; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.5px; z-index: 2; }
+        .badge { position: absolute; top: 10px; right: 10px; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; z-index: 2; }
         .badge-habis { background: #dc2626; } 
         .badge-presale { background: #d97706; } 
-        .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
+        .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
 
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
-        /* Modal Popup */
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.6); backdrop-filter: blur(2px); z-index: 1000; align-items: flex-end; justify-content: center; animation: fadeIn 0.3s; }
-        .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* MODAL POPUP */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.7); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-end; justify-content: center; }
+        .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; max-height: 95vh;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
-        /* Area Slider / Gambar Banyak */
-        .modal-header-img { position: relative; width: 100%; aspect-ratio: 1/1; background: #f9f9f9; border-radius: 24px 24px 0 0; overflow: hidden; }
-        .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; }
+        .modal-header-img { position: relative; width: 100%; aspect-ratio: 1/1; background: #000; border-radius: 24px 24px 0 0; overflow: hidden; }
+        .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; gap: 15px; padding: 0; }
         .image-slider::-webkit-scrollbar { display: none; }
-        .image-slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; }
+        .image-slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; cursor: zoom-in; }
+        .image-slider video { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; scroll-snap-align: center; background: #000;}
         
-        .swipe-hint { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; z-index: 10; pointer-events: none;}
-        .btn-close { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); width: 36px; height: 36px; border-radius: 50%; border: none; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 10; }
+        .swipe-hint { position: absolute; bottom: 20px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; z-index: 10; pointer-events: none;}
+        .btn-close { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; color: #111; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 10; }
         
         .modal-body { padding: 24px; padding-bottom: 100px; overflow-y: auto;}
         .modal-price { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .modal-title { font-size: 18px; font-weight: 500; margin-bottom: 20px; }
-        .modal-desc { font-size: 14px; color: #555; white-space: pre-line; line-height: 1.6; }
+        .modal-title { font-size: 18px; font-weight: 500; margin-bottom: 20px; line-height: 1.3;}
+        .modal-desc { font-size: 14.5px; color: #555; white-space: pre-line; line-height: 1.7; }
         
-        .modal-footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; }
-        .btn-buy { width: 100%; max-width: 400px; background: #111; color: #fff; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 500; }
+        .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
+        .btn-buy { width: 100%; max-width: 400px; background: #111; color: #fff; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 500; font-size: 15px; }
+
+        /* FITUR FULLSCREEN ZOOM GAMBAR */
+        #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; cursor: zoom-out; }
+        #zoom-viewer img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 10px; }
+        .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
@@ -64,30 +66,35 @@
     </header>
 
     <main class="grid-container" id="katalog-container">
-        <div class="status-text">Memuat produk... ⏳</div>
+        <div class="status-text">Membuka etalase... ⚡</div>
     </main>
 
-    <!-- Modal Produk -->
+    <!-- Modal Detail Produk -->
     <div class="modal-overlay" id="product-modal">
         <div class="modal-content">
             <div class="modal-header-img">
-                <button class="btn-close" onclick="closeModal()">&times;</button>
-                <!-- Kontainer Slider Gambar -->
-                <div class="image-slider" id="modal-slider">
-                    <!-- Gambar akan dimunculkan di sini -->
-                </div>
-                <div id="swipe-hint" class="swipe-hint">Geser foto ↔️</div>
+                <button class="btn-close" onclick="closeModal()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                </button>
+                <div class="image-slider" id="modal-slider"></div>
+                <div id="swipe-hint" class="swipe-hint">Geser ↔️</div>
             </div>
             <div class="modal-body">
                 <div class="modal-price" id="modal-price"></div>
                 <div class="modal-title" id="modal-title"></div>
-                <div style="font-size:12px; font-weight:600; color:#888; margin-bottom:8px;">DESKRIPSI</div>
+                <div style="font-size:12px; font-weight:700; color:#888; margin-bottom:10px;">DESKRIPSI LENGKAP</div>
                 <div class="modal-desc" id="modal-desc"></div>
             </div>
             <div class="modal-footer">
                 <a href="#" id="modal-buy-btn" class="btn-buy" target="_blank">Pesan via WhatsApp</a>
             </div>
         </div>
+    </div>
+
+    <!-- Fitur Zoom -->
+    <div id="zoom-viewer" onclick="closeZoom()">
+        <button class="zoom-close">&times;</button>
+        <img id="zoom-img" src="">
     </div>
 
     <script>
@@ -99,6 +106,7 @@
         async function fetchProduk() {
             const container = document.getElementById('katalog-container');
             try {
+                // Tambahkan nocache agar selalu dapat versi terbaru
                 const res = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await res.json();
                 container.innerHTML = ''; 
@@ -106,11 +114,11 @@
 
                 data.reverse().forEach(produk => {
                     const hrg = formatRupiah(produk.price);
-                    // Pisahkan semua gambar menggunakan pemisah |
-                    let images = produk.image ? produk.image.split('|').map(url => url.trim()) : [];
-                    let thumb = images[0] ? images[0] : ""; 
-                    let isMultiple = images.length > 1; // Cek apakah foto lebih dari 1
                     
+                    let mediaRaw = produk.image ? produk.image.split('|').map(url => url.trim()) : [];
+                    let isVideo = mediaRaw[0] && mediaRaw[0].startsWith('vid:');
+                    let thumbUrl = mediaRaw[0] ? mediaRaw[0].replace('img:','').replace('vid:','') : ''; 
+
                     const isHabis = produk.status === "Kosong";
                     const isPresale = produk.status === "Presale";
 
@@ -118,14 +126,19 @@
                     if (isHabis) { badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>'; } 
                     else if (isPresale) { badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; }
 
+                    // Render Thumbnail (Video akan otomatis putar tanpa suara)
+                    let thumbnailHtml = isVideo 
+                        ? `<video src="${thumbUrl}" autoplay muted loop playsinline></video>` 
+                        : `<img src="${thumbUrl}" loading="lazy">`;
+
                     const card = document.createElement('div');
                     card.className = `card ${isHabis ? 'out-of-stock' : ''}`;
                     
                     card.innerHTML = `
                         ${badgeHtml}
                         <div class="card-img-wrapper">
-                            <img src="${thumb}">
-                            ${isMultiple ? '<div class="badge-banyak-foto">Ada ' + images.length + ' Foto</div>' : ''}
+                            ${thumbnailHtml}
+                            ${mediaRaw.length > 1 ? '<div class="badge-banyak-foto">Ada ' + mediaRaw.length + ' File</div>' : ''}
                         </div>
                         <div class="card-content">
                             <div class="card-title">${produk.name}</div>
@@ -134,44 +147,83 @@
                     `;
 
                     if(!isHabis) {
-                        // Kirimkan array gambar lengkap (bukan cuma thumb) ke fungsi openModal
-                        card.addEventListener('click', () => openModal(produk, hrg, images, isPresale));
+                        card.addEventListener('click', () => openModal(produk, hrg, mediaRaw, isPresale));
                     }
                     container.appendChild(card);
                 });
-            } catch (error) { container.innerHTML = '<div class="status-text" style="color:red;">Koneksi terputus.</div>'; }
+            } catch (error) { container.innerHTML = '<div class="status-text" style="color:red;">Koneksi terputus. Muat ulang.</div>'; }
         }
 
         const modal = document.getElementById('product-modal');
+        const zoomViewer = document.getElementById('zoom-viewer');
         
-        function openModal(produk, hrg, images, isPresale) {
-            // Render semua foto ke dalam slider
+        function openModal(produk, hrg, mediaArray, isPresale) {
             let sliderHtml = '';
-            images.forEach(imgSrc => {
-                if(imgSrc) sliderHtml += `<img src="${imgSrc}" onerror="this.onerror=null; this.src='https://via.placeholder.com/400?text=Error'">`;
+            mediaArray.forEach(media => {
+                if(media) {
+                    let isVid = media.startsWith('vid:');
+                    let url = media.replace('img:', '').replace('vid:', '');
+                    
+                    if(isVid) {
+                        sliderHtml += `<video src="${url}" controls playsinline></video>`;
+                    } else {
+                        sliderHtml += `<img src="${url}" onclick="openZoom('${url}')" loading="lazy">`;
+                    }
+                }
             });
             document.getElementById('modal-slider').innerHTML = sliderHtml;
-            
-            // Tampilkan/Sembunyikan hint "Geser foto" jika foto cuma 1
-            document.getElementById('swipe-hint').style.display = images.length > 1 ? 'block' : 'none';
+            document.getElementById('swipe-hint').style.display = mediaArray.length > 1 ? 'block' : 'none';
 
             document.getElementById('modal-title').innerText = produk.name;
             document.getElementById('modal-price').innerText = hrg;
             document.getElementById('modal-desc').innerText = produk.desc;
             
-            let textWA = '';
-            if(isPresale) {
-                textWA = `Halo, saya tertarik untuk ikut PRE-ORDER / PRESALE:\n\n*${produk.name}*\nHarga: ${hrg}\n\nBagaimana sistem PO-nya?`;
-            } else {
-                textWA = `Halo, saya mau pesan:\n\n*${produk.name}*\nHarga: ${hrg}`;
-            }
+            let textWA = isPresale 
+                ? `Halo, saya tertarik ikut PRE-ORDER:\n\n*${produk.name}*\nHarga: ${hrg}\n\nBagaimana sistemnya?`
+                : `Halo, saya mau pesan:\n\n*${produk.name}*\nHarga: ${hrg}`;
 
             document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
+            
+            // PUSH STATE UNTUK TOMBOL BACK
+            history.pushState({ state: 'modal_open' }, '');
             modal.style.display = 'flex';
         }
 
-        function closeModal() { modal.style.display = 'none'; }
-        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
+        function openZoom(src) {
+            document.getElementById('zoom-img').src = src;
+            history.pushState({ state: 'zoom_open' }, '');
+            zoomViewer.style.display = 'flex';
+        }
+
+        function closeModal() {
+            // Memicu tombol back browser secara otomatis agar history bersih
+            history.back();
+        }
+
+        function closeZoom() {
+            history.back();
+        }
+
+        // FUNGSI INI AKAN MENANGKAP TOMBOL BACK FISIK & SWIPE
+        window.addEventListener('popstate', function(e) {
+            if (!e.state) {
+                // Jika history kosong, tutup semua
+                modal.style.display = 'none';
+                zoomViewer.style.display = 'none';
+                
+                // Matikan video jika ada yang sedang diputar di popup
+                document.getElementById('modal-slider').innerHTML = ''; 
+            } else if (e.state.state === 'modal_open') {
+                // Jika posisi di modal, pastikan zoom tertutup
+                zoomViewer.style.display = 'none';
+                modal.style.display = 'flex';
+            }
+        });
+
+        // Tutup saat area gelap di luar pop-up diklik
+        modal.addEventListener('click', (e) => { 
+            if(e.target === modal) closeModal(); 
+        });
 
         fetchProduk();
     </script>
