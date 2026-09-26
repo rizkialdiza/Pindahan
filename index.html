@@ -53,10 +53,14 @@
         .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
         .btn-buy { width: 100%; max-width: 400px; background: #111; color: #fff; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 500; font-size: 15px; }
 
-        /* FITUR FULLSCREEN ZOOM GAMBAR */
-        #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; cursor: zoom-out; }
-        #zoom-viewer img { max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 10px; }
-        .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; }
+        /* FITUR FULLSCREEN ZOOM GAMBAR (BISA DIGESER!) */
+        #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; }
+        .zoom-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; align-items: center; }
+        .zoom-slider::-webkit-scrollbar { display: none; }
+        .zoom-slider img, .zoom-slider video { flex: 0 0 100%; width: 100%; max-height: 95vh; object-fit: contain; scroll-snap-align: center; }
+        
+        .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; z-index: 2010; cursor: pointer;}
+        .zoom-swipe-hint { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; z-index: 2010; pointer-events: none;}
     </style>
 </head>
 <body>
@@ -91,10 +95,11 @@
         </div>
     </div>
 
-    <!-- Fitur Zoom -->
-    <div id="zoom-viewer" onclick="closeZoom()">
-        <button class="zoom-close">&times;</button>
-        <img id="zoom-img" src="">
+    <!-- Fitur Zoom Interaktif -->
+    <div id="zoom-viewer">
+        <button class="zoom-close" onclick="closeZoom()">&times;</button>
+        <div class="zoom-slider" id="zoom-slider"></div>
+        <div id="zoom-swipe-hint" class="zoom-swipe-hint">Geser untuk melihat foto lain</div>
     </div>
 
     <script>
@@ -102,11 +107,12 @@
         const NOMOR_WA = "6281360171337"; 
 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
+        
+        let currentZoomMedia = []; // Menyimpan foto untuk mode Zoom
 
         async function fetchProduk() {
             const container = document.getElementById('katalog-container');
             try {
-                // Tambahkan nocache agar selalu dapat versi terbaru
                 const res = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await res.json();
                 container.innerHTML = ''; 
@@ -126,7 +132,6 @@
                     if (isHabis) { badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>'; } 
                     else if (isPresale) { badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; }
 
-                    // Render Thumbnail (Video akan otomatis putar tanpa suara)
                     let thumbnailHtml = isVideo 
                         ? `<video src="${thumbUrl}" autoplay muted loop playsinline></video>` 
                         : `<img src="${thumbUrl}" loading="lazy">`;
@@ -158,8 +163,10 @@
         const zoomViewer = document.getElementById('zoom-viewer');
         
         function openModal(produk, hrg, mediaArray, isPresale) {
+            currentZoomMedia = mediaArray; // Simpan untuk mode perbesar
             let sliderHtml = '';
-            mediaArray.forEach(media => {
+            
+            mediaArray.forEach((media, index) => {
                 if(media) {
                     let isVid = media.startsWith('vid:');
                     let url = media.replace('img:', '').replace('vid:', '');
@@ -167,7 +174,7 @@
                     if(isVid) {
                         sliderHtml += `<video src="${url}" controls playsinline></video>`;
                     } else {
-                        sliderHtml += `<img src="${url}" onclick="openZoom('${url}')" loading="lazy">`;
+                        sliderHtml += `<img src="${url}" onclick="openZoom(${index})" loading="lazy">`;
                     }
                 }
             });
@@ -184,46 +191,56 @@
 
             document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
             
-            // PUSH STATE UNTUK TOMBOL BACK
             history.pushState({ state: 'modal_open' }, '');
             modal.style.display = 'flex';
         }
 
-        function openZoom(src) {
-            document.getElementById('zoom-img').src = src;
+        // FUNGSI ZOOM BARU (FULLSCREEN SLIDER)
+        function openZoom(startIndex) {
+            let zoomHtml = '';
+            currentZoomMedia.forEach((media) => {
+                if(media) {
+                    let isVid = media.startsWith('vid:');
+                    let url = media.replace('img:', '').replace('vid:', '');
+                    if(isVid) {
+                        zoomHtml += `<video src="${url}" controls playsinline></video>`;
+                    } else {
+                        zoomHtml += `<img src="${url}">`;
+                    }
+                }
+            });
+            
+            const zoomSlider = document.getElementById('zoom-slider');
+            zoomSlider.innerHTML = zoomHtml;
+            document.getElementById('zoom-swipe-hint').style.display = currentZoomMedia.length > 1 ? 'block' : 'none';
+            
             history.pushState({ state: 'zoom_open' }, '');
             zoomViewer.style.display = 'flex';
+
+            // Langsung geser ke foto yang diklik
+            setTimeout(() => {
+                zoomSlider.scrollLeft = zoomSlider.clientWidth * startIndex;
+            }, 10);
         }
 
-        function closeModal() {
-            // Memicu tombol back browser secara otomatis agar history bersih
-            history.back();
-        }
+        function closeModal() { history.back(); }
+        function closeZoom() { history.back(); }
 
-        function closeZoom() {
-            history.back();
-        }
-
-        // FUNGSI INI AKAN MENANGKAP TOMBOL BACK FISIK & SWIPE
         window.addEventListener('popstate', function(e) {
             if (!e.state) {
-                // Jika history kosong, tutup semua
                 modal.style.display = 'none';
                 zoomViewer.style.display = 'none';
-                
-                // Matikan video jika ada yang sedang diputar di popup
                 document.getElementById('modal-slider').innerHTML = ''; 
+                document.getElementById('zoom-slider').innerHTML = ''; 
             } else if (e.state.state === 'modal_open') {
-                // Jika posisi di modal, pastikan zoom tertutup
                 zoomViewer.style.display = 'none';
                 modal.style.display = 'flex';
+                document.getElementById('zoom-slider').innerHTML = ''; // Matikan video di zoom jika ada
             }
         });
 
-        // Tutup saat area gelap di luar pop-up diklik
-        modal.addEventListener('click', (e) => { 
-            if(e.target === modal) closeModal(); 
-        });
+        // Tutup saat area gelap diklik
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
         fetchProduk();
     </script>
