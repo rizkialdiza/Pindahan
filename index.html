@@ -14,7 +14,6 @@
         .header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
         .header h1 { font-size: 20px; color: #111; letter-spacing: -0.5px;}
 
-        /* ====== BAR PENCARIAN & FILTER ====== */
         .toolbar { display: flex; gap: 10px; padding: 20px 20px 0; max-width: 1200px; margin: 0 auto; align-items: center;}
         .search-box { flex: 1; position: relative; }
         .search-box input { width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14.5px; transition: 0.2s; background: #fff;}
@@ -22,14 +21,13 @@
         .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888; }
         
         .sort-select { padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14px; background: #fff; cursor: pointer; color: #333; font-weight: 500;}
-        .sort-select:focus { border-color: var(--primary); }
-        /* ==================================== */
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 20px; max-width: 1200px; margin: 0 auto; }
         
         .card { background: #fff; border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #f0f0f0; display: flex; flex-direction: column;}
+        .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .card-img-wrapper { position: relative; width: 100%; padding-top: 100%; background: #f0f0f0;}
-        .card-img-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .card-img-wrapper img, .card-img-wrapper video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
         .card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column;}
         .card-title { font-size: 14px; font-weight: 500; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
         .card-price { font-size: 16px; font-weight: 700; margin-top: auto;}
@@ -43,7 +41,6 @@
 
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
-        /* MODAL POPUP */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.7); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-end; justify-content: center; }
         .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; max-height: 95vh;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -53,7 +50,7 @@
         .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; gap: 15px; padding: 0; }
         .image-slider::-webkit-scrollbar { display: none; }
         .image-slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; cursor: zoom-in; }
-        .image-slider iframe { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; scroll-snap-align: center; border: none; background: #000;}
+        .image-slider video { flex: 0 0 100%; width: 100%; height: 100%; object-fit: contain; scroll-snap-align: center; background: #000;}
         
         .swipe-hint { position: absolute; bottom: 20px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; z-index: 10; pointer-events: none;}
         .btn-close { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; color: #111; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 10; }
@@ -66,7 +63,6 @@
         .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
         .btn-buy { width: 100%; max-width: 400px; background: #111; color: #fff; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 500; font-size: 15px; }
 
-        /* FITUR ZOOM SWIPER */
         #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; }
         .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; z-index: 2010; cursor: pointer;}
         
@@ -84,7 +80,6 @@
         <h1>Katalog Produk</h1>
     </header>
 
-    <!-- BAR PENCARIAN & FILTER -->
     <div class="toolbar">
         <div class="search-box">
             <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -140,11 +135,10 @@
 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
         
-        let allProducts = []; // Menyimpan semua data mentah
+        let allProducts = []; 
         let currentZoomMedia = []; 
         let swiperInstance = null; 
 
-        // 1. MENGAMBIL DATA DARI SERVER
         async function fetchProduk() {
             const container = document.getElementById('katalog-container');
             try {
@@ -155,50 +149,37 @@
                     return container.innerHTML = '<div class="status-text">Katalog kosong.</div>';
                 }
 
-                // Simpan data aslinya (dibalik agar yang terbaru di atas)
                 allProducts = data.reverse(); 
-                
-                // Panggil mesin filter/search untuk memunculkan data pertama kali
                 applyFilterAndSort(); 
 
             } catch (error) { container.innerHTML = '<div class="status-text" style="color:red;">Koneksi terputus. Muat ulang.</div>'; }
         }
 
-        // 2. MESIN PENCARIAN & SORTING
         function applyFilterAndSort() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const sortVal = document.getElementById('sortSelect').value;
-            const container = document.getElementById('katalog-container');
-
-            // Copy array asli agar tidak merusak urutan "Terbaru"
             let filtered = [...allProducts];
 
-            // A. Fitur Pencarian Pintar (Tidak Sensitif)
             if (query) {
-                const keywords = query.split(/\s+/); // Pisahkan per kata (misal "baju hitam")
+                const keywords = query.split(/\s+/);
                 filtered = filtered.filter(p => {
                     const nameLower = p.name.toLowerCase();
-                    // Cek apakah SEMUA kata kunci ada di dalam nama (posisi acak tidak masalah)
                     return keywords.every(kw => nameLower.includes(kw)); 
                 });
             }
 
-            // B. Fitur Urutkan Harga
             if (sortVal === 'cheap') {
-                filtered.sort((a, b) => Number(a.price) - Number(b.price)); // Termurah ke termahal
+                filtered.sort((a, b) => Number(a.price) - Number(b.price)); 
             } else if (sortVal === 'expensive') {
-                filtered.sort((a, b) => Number(b.price) - Number(a.price)); // Termahal ke termurah
+                filtered.sort((a, b) => Number(b.price) - Number(a.price)); 
             }
 
-            // C. Cetak Hasilnya ke Layar
             renderKatalog(filtered);
         }
 
-        // Event Listener untuk memicu pencarian secara real-time saat mengetik / memilih
         document.getElementById('searchInput').addEventListener('input', applyFilterAndSort);
         document.getElementById('sortSelect').addEventListener('change', applyFilterAndSort);
 
-        // 3. FUNGSI MENCETAK KARTU PRODUK
         function renderKatalog(dataToRender) {
             const container = document.getElementById('katalog-container');
             container.innerHTML = ''; 
@@ -214,7 +195,7 @@
                 let mediaRaw = produk.image ? produk.image.split('|').map(url => url.trim()) : [];
                 let firstMedia = mediaRaw[0] || '';
                 let isVideo = firstMedia.startsWith('vid:');
-                let fileId = firstMedia.replace('img:','').replace('vid:','');
+                let thumbUrl = firstMedia.replace('img:','').replace('vid:','');
 
                 const isHabis = produk.status === "Kosong";
                 const isPresale = produk.status === "Presale";
@@ -223,9 +204,9 @@
                 if (isHabis) { badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>'; } 
                 else if (isPresale) { badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; }
 
-                let thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+                // GUNAKAN VIDEO NATIVE HTML5 (BUKAN IFRAME) AGAR TIDAK DIBLOKIR APPLE/SAFARI
                 let thumbnailHtml = isVideo 
-                    ? `<img src="${thumbUrl}" loading="lazy"><div class="badge-video">▶</div>` 
+                    ? `<video src="${thumbUrl}" muted loop autoplay playsinline style="object-fit:cover; width:100%; height:100%;"></video><div class="badge-video">▶</div>` 
                     : `<img src="${thumbUrl}" loading="lazy">`;
 
                 const card = document.createElement('div');
@@ -250,9 +231,6 @@
             });
         }
 
-        // ==========================================
-        // SISTEM MODAL (Sama seperti sebelumnya)
-        // ==========================================
         const modal = document.getElementById('product-modal');
         const zoomViewer = document.getElementById('zoom-viewer');
         
@@ -263,13 +241,12 @@
             mediaArray.forEach((media, index) => {
                 if(media) {
                     let isVid = media.startsWith('vid:');
-                    let fileId = media.replace('img:', '').replace('vid:', '');
+                    let url = media.replace('img:', '').replace('vid:', '');
                     
                     if(isVid) {
-                        sliderHtml += `<iframe src="https://drive.google.com/file/d/${fileId}/preview" allow="autoplay"></iframe>`;
+                        sliderHtml += `<video src="${url}" controls playsinline></video>`;
                     } else {
-                        let imgUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
-                        sliderHtml += `<img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy">`;
+                        sliderHtml += `<img src="${url}" onclick="openZoom(${index})" loading="lazy">`;
                     }
                 }
             });
@@ -295,19 +272,17 @@
             currentZoomMedia.forEach((media) => {
                 if(media) {
                     let isVid = media.startsWith('vid:');
-                    let fileId = media.replace('img:', '').replace('vid:', '');
+                    let url = media.replace('img:', '').replace('vid:', '');
                     
                     if(isVid) {
-                        zoomHtml += `<div class="swiper-slide"><iframe src="https://drive.google.com/file/d/${fileId}/preview" style="width:100%; height:80vh; border:none;"></iframe></div>`;
+                        zoomHtml += `<div class="swiper-slide"><video src="${url}" controls playsinline style="width:100%; max-height:85vh; object-fit:contain;"></video></div>`;
                     } else {
-                        let imgUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
-                        zoomHtml += `<div class="swiper-slide"><div class="swiper-zoom-container"><img src="${imgUrl}"></div></div>`;
+                        zoomHtml += `<div class="swiper-slide"><div class="swiper-zoom-container"><img src="${url}"></div></div>`;
                     }
                 }
             });
             
             document.getElementById('zoom-swiper-wrapper').innerHTML = zoomHtml;
-            
             history.pushState({ state: 'zoom_open' }, '');
             zoomViewer.style.display = 'flex';
 
@@ -339,7 +314,6 @@
 
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-        // JALANKAN PROGRAM!
         fetchProduk();
     </script>
 </body>
