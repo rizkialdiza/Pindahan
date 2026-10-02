@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Katalog Eksklusif</title>
     
-    <!-- Pemanas Koneksi (Preconnect) agar gambar Google Drive lebih cepat dimuat -->
     <link rel="preconnect" href="https://drive.google.com">
     <link rel="preconnect" href="https://script.google.com">
     
@@ -27,6 +26,7 @@
         .sort-select { padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14px; background: #fff; cursor: pointer; color: #333; font-weight: 500;}
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        
         .card { background: #fff; border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #f0f0f0; display: flex; flex-direction: column;}
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         .card-img-wrapper { position: relative; width: 100%; padding-top: 100%; background: #eaeaea;}
@@ -41,8 +41,23 @@
         .badge-presale { background: #d97706; } 
         .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
 
+        /* EFEK SKELETON LOADING (SHIMMER) */
+        .skeleton-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #f0f0f0; display: flex; flex-direction: column; height: 260px;}
+        .skeleton-img { width: 100%; padding-top: 100%; background: #e5e5e5; position: relative; overflow: hidden; }
+        .skeleton-text { height: 14px; background: #e5e5e5; margin: 15px 15px 5px; border-radius: 4px; position: relative; overflow: hidden; width: 80%;}
+        .skeleton-text.short { width: 50%; margin-top: 5px; height: 18px; }
+        
+        .shimmer::after {
+            content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0));
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 100% { transform: translateX(100%); } }
+
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
+        /* MODAL POPUP */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.7); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-end; justify-content: center; }
         .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; max-height: 95vh;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -63,6 +78,7 @@
         .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
         .btn-buy { width: 100%; max-width: 400px; background: #111; color: #fff; padding: 16px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 500; font-size: 15px; }
 
+        /* FITUR ZOOM SWIPER */
         #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; }
         .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; z-index: 2010; cursor: pointer;}
         
@@ -95,7 +111,7 @@
     </div>
 
     <main class="grid-container" id="katalog-container">
-        <div class="status-text">Membuka etalase... ⚡</div>
+        <!-- Skeleton akan dimuat di sini oleh JavaScript -->
     </main>
 
     <div class="modal-overlay" id="product-modal">
@@ -140,12 +156,29 @@
         let currentZoomMedia = []; 
         let swiperInstance = null; 
 
-        async function fetchProduk() {
+        // Fungsi menampilkan Skeleton Loading (Menggantikan "Membuka etalase...")
+        function renderSkeleton() {
             const container = document.getElementById('katalog-container');
+            container.innerHTML = '';
+            for(let i=0; i<8; i++) {
+                container.innerHTML += `
+                    <div class="skeleton-card">
+                        <div class="skeleton-img shimmer"></div>
+                        <div class="skeleton-text shimmer"></div>
+                        <div class="skeleton-text short shimmer"></div>
+                    </div>
+                `;
+            }
+        }
+
+        async function fetchProduk() {
+            renderSkeleton(); // Tampilkan animasi loading instan
+
             try {
                 const res = await fetch(`${API_URL}?t=${new Date().getTime()}`);
                 const data = await res.json();
                 
+                const container = document.getElementById('katalog-container');
                 if (!data || data.length === 0) {
                     return container.innerHTML = '<div class="status-text">Katalog kosong.</div>';
                 }
@@ -153,7 +186,9 @@
                 allProducts = data.reverse(); 
                 applyFilterAndSort(); 
 
-            } catch (error) { container.innerHTML = '<div class="status-text" style="color:red;">Koneksi terputus. Muat ulang.</div>'; }
+            } catch (error) { 
+                document.getElementById('katalog-container').innerHTML = '<div class="status-text" style="color:red;">Koneksi terputus. Muat ulang.</div>'; 
+            }
         }
 
         function applyFilterAndSort() {
@@ -203,7 +238,6 @@
                 if (isHabis) { badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>'; } 
                 else if (isPresale) { badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; }
 
-                // OPTIMASI: Resolusi dikecilkan menjadi 300px agar load gambar secepat kilat!
                 let thumbUrl = firstId ? `https://drive.google.com/thumbnail?id=${firstId}&sz=w300` : '';
 
                 const card = document.createElement('div');
@@ -237,7 +271,6 @@
             
             mediaArray.forEach((fileId, index) => {
                 if(fileId) {
-                    // Gambar Full HD ditarik ketika user sudah mengklik produk
                     let imgUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
                     sliderHtml += `<img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy">`;
                 }
@@ -249,13 +282,10 @@
             document.getElementById('modal-price').innerText = hrg;
             document.getElementById('modal-desc').innerText = produk.desc;
             
-            // OPTIMASI PESAN WA: Sertakan link gambar produk agar admin langsung paham
-            let firstImageId = mediaArray[0] || '';
-            let waImgLink = firstImageId ? `https://drive.google.com/file/d/${firstImageId}/view` : '';
-
+            // LINK GAMBAR DIHAPUS, HANYA MENGIRIM TEKS BERSIH
             let textWA = isPresale 
-                ? `Halo, saya tertarik ikut PRE-ORDER:\n\n*${produk.name}*\nHarga: ${hrg}\n\nLihat Gambar: ${waImgLink}\n\nBagaimana sistemnya?`
-                : `Halo, saya mau pesan:\n\n*${produk.name}*\nHarga: ${hrg}\n\nLihat Gambar: ${waImgLink}`;
+                ? `Halo, saya tertarik ikut PRE-ORDER:\n\n*${produk.name}*\nHarga: ${hrg}\n\nBagaimana sistemnya?`
+                : `Halo, saya mau pesan:\n\n*${produk.name}*\nHarga: ${hrg}`;
 
             document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
             
