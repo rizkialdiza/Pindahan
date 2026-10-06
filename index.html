@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <style>
+        /* TEMA ASLI KEMBALI (HITAM, PUTIH, ABU-ABU) */
         :root { --primary: #111; --bg-color: #f3f4f6; --text-main: #111827; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent;}
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 30px; }
@@ -41,6 +42,7 @@
         .badge-presale { background: #d97706; } 
         .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
 
+        /* EFEK SKELETON LOADING (SHIMMER) */
         .skeleton-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #f0f0f0; display: flex; flex-direction: column; height: 260px;}
         .skeleton-img { width: 100%; padding-top: 100%; background: #e5e5e5; position: relative; overflow: hidden; }
         .skeleton-text { height: 14px; background: #e5e5e5; margin: 15px 15px 5px; border-radius: 4px; position: relative; overflow: hidden; width: 80%;}
@@ -51,26 +53,29 @@
 
         .status-text { grid-column: 1 / -1; text-align: center; padding: 40px 20px; color: #666; font-size: 14px; }
 
+        /* MODAL POPUP */
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.7); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-end; justify-content: center; }
         .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; max-height: 95vh;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         
         .modal-header-img { position: relative; width: 100%; aspect-ratio: 1/1; background: #000; border-radius: 24px 24px 0 0; overflow: hidden; }
-        .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; gap: 15px; padding: 0; }
-        .image-slider::-webkit-scrollbar { display: none; }
-        .image-slider img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; scroll-snap-align: center; cursor: zoom-in; }
+        
+        /* Swiper CSS Kustom (Agar tidak licin) */
+        .swiper { width: 100%; height: 100%; }
+        .modalSwiper .swiper-slide img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+        .swiper-pagination-bullet { background: #ffffff !important; opacity: 0.5; }
+        .swiper-pagination-bullet-active { opacity: 1; }
         
         .swipe-hint { position: absolute; bottom: 20px; right: 12px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; z-index: 10; pointer-events: none;}
         .btn-close { position: absolute; top: 15px; left: 15px; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; border: none; font-size: 20px; color: #111; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 10; }
         
         .modal-body { padding: 24px; padding-bottom: 100px; overflow-y: auto;}
-        .modal-price { font-size: 24px; font-weight: 700; margin-bottom: 5px; color: #111;}
+        .modal-price { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
         .modal-title { font-size: 18px; font-weight: 500; margin-bottom: 20px; line-height: 1.3;}
         .modal-desc { font-size: 14.5px; color: #555; white-space: pre-line; line-height: 1.7; }
         
         .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
         
-        /* TOMBOL WA BARU - HIJAU ELEGAN */
         .btn-buy { width: 100%; max-width: 400px; background: #25D366; color: #fff; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3); transition: 0.2s;}
         .btn-buy:active { transform: scale(0.98); }
         .btn-buy:hover { background: #128C7E; }
@@ -78,12 +83,7 @@
         #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; }
         .zoom-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; display: flex; justify-content: center; align-items: center; z-index: 2010; cursor: pointer;}
         
-        .swiper { width: 100%; height: 100%; }
-        .swiper-slide { display: flex; align-items: center; justify-content: center; }
-        .swiper-zoom-container { width: 100%; height: 100%; }
-        .swiper-zoom-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .swiper-pagination-bullet { background: #ffffff !important; opacity: 0.5; }
-        .swiper-pagination-bullet-active { opacity: 1; }
+        .mySwiper .swiper-zoom-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
@@ -107,16 +107,20 @@
     </div>
 
     <main class="grid-container" id="katalog-container">
-        <!-- Skeleton Loading akan muncul disini -->
+        <!-- Skeleton Loading -->
     </main>
 
     <div class="modal-overlay" id="product-modal">
         <div class="modal-content">
+            <!-- Modal Slider Menggunakan Swiper.js agar mantap & kesat -->
             <div class="modal-header-img">
                 <button class="btn-close" onclick="closeModal()">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 </button>
-                <div class="image-slider" id="modal-slider"></div>
+                <div class="swiper modalSwiper">
+                    <div class="swiper-wrapper" id="modal-slider"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
                 <div id="swipe-hint" class="swipe-hint">Geser ↔️</div>
             </div>
             <div class="modal-body">
@@ -127,7 +131,6 @@
             </div>
             <div class="modal-footer">
                 <a href="#" id="modal-buy-btn" class="btn-buy" target="_blank">
-                    <!-- Ikon WhatsApp -->
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12.031 0C5.385 0 0 5.388 0 12.034c0 2.124.553 4.197 1.605 6.01L.027 23.996l6.105-1.601a11.964 11.964 0 005.899 1.545h.005c6.645 0 12.034-5.388 12.034-12.035C24.066 5.388 18.681 0 12.031 0zm0 21.936a9.92 9.92 0 01-5.067-1.38l-.363-.214-3.766.986.998-3.666-.235-.374A9.926 9.926 0 012.023 12.03c0-5.518 4.492-10.01 10.01-10.01 5.517 0 10.009 4.492 10.009 10.01 0 5.518-4.492 10.01-10.01 10.01zm5.492-7.514c-.301-.151-1.782-.88-2.059-.981-.277-.101-.479-.151-.68.151-.202.302-.78 .98-.957 1.182-.176.201-.353.226-.654.075-1.411-.711-2.585-1.442-3.6-2.909-.264-.383-.027-.585.123-.734.135-.135.302-.352.453-.528.151-.176.201-.302.302-.503.101-.202.05-.377-.025-.528-.076-.151-.68-1.642-.932-2.247-.246-.591-.497-.512-.68-.521-.176-.01-.377-.01-.579-.01-.201 0-.528.076-.805.377-.277.302-1.056 1.032-1.056 2.516 0 1.485 1.082 2.92 1.233 3.122.151.201 2.13 3.251 5.158 4.557.72.311 1.282.497 1.722.637.723.23 1.382.197 1.9.119.58-.088 1.782-.728 2.034-1.432.251-.704.251-1.309.176-1.432-.075-.126-.277-.201-.579-.352z"/></svg>
                     Pesan via WhatsApp
                 </a>
@@ -135,6 +138,7 @@
         </div>
     </div>
 
+    <!-- Zoom Layar Penuh -->
     <div id="zoom-viewer">
         <button class="zoom-close" onclick="closeZoom()">&times;</button>
         <div class="swiper mySwiper">
@@ -155,6 +159,7 @@
         let allProducts = []; 
         let currentZoomMedia = []; 
         let swiperInstance = null; 
+        let modalSwiper = null; // Menahan slider agar tidak licin
 
         function renderSkeleton() {
             const container = document.getElementById('katalog-container');
@@ -270,17 +275,25 @@
             mediaArray.forEach((fileId, index) => {
                 if(fileId) {
                     let imgUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
-                    sliderHtml += `<img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy">`;
+                    sliderHtml += `<div class="swiper-slide"><img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy"></div>`;
                 }
             });
             document.getElementById('modal-slider').innerHTML = sliderHtml;
             document.getElementById('swipe-hint').style.display = mediaArray.length > 1 ? 'block' : 'none';
 
+            // INSISIALISASI SWIPER AGAR TIDAK LICIN SAAT DIGESER
+            if(modalSwiper) modalSwiper.destroy(true, true);
+            modalSwiper = new Swiper(".modalSwiper", {
+                spaceBetween: 0,
+                resistanceRatio: 0.85, // Mencegah bablas geser
+                speed: 350, // Kecepatan pindah pas (tidak licin)
+                pagination: { el: ".swiper-pagination", clickable: true },
+            });
+
             document.getElementById('modal-title').innerText = produk.name;
             document.getElementById('modal-price').innerText = hrg;
             document.getElementById('modal-desc').innerText = produk.desc;
             
-            // FUNGSI PEMBERSIH SPASI AGAR TEKS BOLD WA TIDAK ERROR
             let cleanName = produk.name.trim();
 
             let textWA = isPresale 
