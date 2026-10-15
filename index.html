@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
     <title>Katalog Eksklusif</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     
-    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
@@ -20,12 +20,12 @@
         .header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee; }
         .header h1 { font-size: 20px; color: #111; letter-spacing: -0.5px;}
 
-        .toolbar { display: flex; gap: 10px; padding: 20px 20px 0; max-width: 1200px; margin: 0 auto; align-items: center;}
-        .search-box { flex: 1; position: relative; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; padding: 20px 20px 0; max-width: 1200px; margin: 0 auto; align-items: center;}
+        .search-box { flex: 1; position: relative; min-width: 200px;}
         .search-box input { width: 100%; padding: 12px 16px 12px 42px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14.5px; transition: 0.2s; background: #fff;}
         .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(17,17,17,0.1); }
         .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888; }
-        .sort-select { padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14px; background: #fff; cursor: pointer; color: #333; font-weight: 500;}
+        .sort-select { padding: 12px 14px; border-radius: 12px; border: 1px solid #e5e5e5; outline: none; font-size: 14px; background: #fff; cursor: pointer; color: #333; font-weight: 500; min-width: 150px;}
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; padding: 20px; max-width: 1200px; margin: 0 auto; }
         
@@ -39,8 +39,11 @@
 
         .card.out-of-stock { opacity: 0.6; filter: grayscale(80%); pointer-events: none; } 
         .badge { position: absolute; top: 10px; right: 10px; color: white; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; z-index: 2; }
-        .badge-habis { background: #dc2626; } 
+        
+        /* PEMBARUAN LABEL PELANGGAN */
+        .badge-habis { background: #166534; } 
         .badge-presale { background: #d97706; } 
+
         .badge-banyak-foto { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; padding: 4px 8px; border-radius: 6px; font-size: 10px; z-index: 2;}
 
         .skeleton-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid #f0f0f0; display: flex; flex-direction: column; height: 260px;}
@@ -55,6 +58,7 @@
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0, 0.7); backdrop-filter: blur(3px); z-index: 1000; align-items: flex-end; justify-content: center; }
         .modal-content { background: #fff; width: 100%; max-width: 600px; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; animation: slideUp 0.3s; max-height: 95vh;}
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
         .modal-header-img { position: relative; width: 100%; aspect-ratio: 1/1; background: #000; border-radius: 24px 24px 0 0; overflow: hidden; }
         
@@ -72,7 +76,7 @@
         .modal-desc { font-size: 14.5px; color: #555; white-space: pre-line; line-height: 1.7; }
         
         .modal-footer { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px 20px; background: #fff; border-top: 1px solid #eee; display: flex; justify-content: center; z-index: 10;}
-        .btn-buy { width: 100%; max-width: 400px; background: #25D366; color: #fff; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3); transition: 0.2s;}
+        .btn-buy { width: 100%; max-width: 400px; background: #25D366; color: #fff; padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 600; font-size: 15px; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3); transition: 0.2s; border: none; cursor: pointer;}
         .btn-buy:active { transform: scale(0.98); } .btn-buy:hover { background: #128C7E; }
 
         #zoom-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 2000; flex-direction: column; }
@@ -91,15 +95,19 @@
             <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <input type="text" id="searchInput" placeholder="Cari barang...">
         </div>
+        
         <select id="sortSelect" class="sort-select">
             <option value="new">🌟 Terbaru</option>
-            <option value="cheap">⬇️ Termurah</option>
-            <option value="expensive">⬆️ Termahal</option>
+            <option value="ready">✅ Tersedia</option>
+            <option value="presale">⏳ Pre-sale</option>
+            <option value="cheap">⬇️ Harga Terendah</option>
+            <option value="expensive">⬆️ Harga Tertinggi</option>
         </select>
     </div>
 
     <main class="grid-container" id="katalog-container"></main>
 
+    <!-- MODAL PRODUK -->
     <div class="modal-overlay" id="product-modal">
         <div class="modal-content">
             <div class="modal-header-img">
@@ -125,6 +133,21 @@
         </div>
     </div>
 
+    <!-- POP-UP PRESALE -->
+    <div class="modal-overlay" id="custom-alert" style="z-index: 3000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="max-width: 340px; border-radius: 20px; padding: 30px 24px; text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 45px; margin-bottom: 15px;">📦</div>
+            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #111;">Pengingat Pre-Sale</h3>
+            <p style="font-size: 14.5px; color: #555; margin-bottom: 25px; line-height: 1.6;">
+                Barang ini berstatus <b>Pre-Sale</b>.<br>Pembayaran dilakukan di awal untuk booking. Barang baru dapat diambil atau dikirim mulai tanggal <b style="color:#111;">8 November 2026</b>.
+            </p>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="document.getElementById('custom-alert').style.display='none'" style="flex: 1; padding: 14px; background: #f0f0f0; border: none; border-radius: 12px; font-weight: 600; color: #333; cursor: pointer;">Kembali</button>
+                <a id="alert-lanjut-wa" href="#" target="_blank" onclick="document.getElementById('custom-alert').style.display='none'" style="flex: 1; padding: 14px; background: #25D366; border: none; border-radius: 12px; font-weight: 600; color: #fff; text-decoration: none; display: flex; justify-content: center; align-items: center;">Lanjut WA</a>
+            </div>
+        </div>
+    </div>
+
     <div id="zoom-viewer">
         <button class="zoom-close" onclick="closeZoom()">&times;</button>
         <div class="swiper mySwiper"><div class="swiper-wrapper" id="zoom-swiper-wrapper"></div><div class="swiper-pagination"></div></div>
@@ -133,22 +156,18 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-        // INISIALISASI FIREBASE
         firebase.initializeApp({
-            apiKey: "AIzaSyBZgM4UhREna78QDErqZRoQAxQJOV2or-g",
-            authDomain: "katalogpindahan.firebaseapp.com",
-            projectId: "katalogpindahan",
-            storageBucket: "katalogpindahan.firebasestorage.app",
-            messagingSenderId: "669980037618",
-            appId: "1:669980037618:web:f8edfb7d9769390bb61b6b",
-            measurementId: "G-VE15CDCC0Y"
+          apiKey: "AIzaSyBZgM4UhREna78QDErqZRoQAxQJOV2or-g",
+          authDomain: "katalogpindahan.firebaseapp.com",
+          projectId: "katalogpindahan",
+          storageBucket: "katalogpindahan.firebasestorage.app",
+          messagingSenderId: "669980037618",
+          appId: "1:669980037618:web:f8edfb7d9769390bb61b6b",
+          measurementId: "G-VE15CDCC0Y"
         });
         const db = firebase.firestore();
-
-        // Variabel Modal Didefinisikan di Awal Agar Aman
         const modal = document.getElementById('product-modal');
         const zoomViewer = document.getElementById('zoom-viewer');
-
         const NOMOR_WA = "6281360171337"; 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
         
@@ -167,12 +186,9 @@
             try {
                 const snapshot = await db.collection("products").orderBy("createdAt", "desc").get();
                 const container = document.getElementById('katalog-container');
-                
                 if (snapshot.empty) return container.innerHTML = '<div class="status-text">Katalog kosong.</div>';
-
                 allProducts = [];
                 snapshot.forEach(doc => { allProducts.push(doc.data()); });
-                
                 applyFilterAndSort(); 
             } catch (error) { document.getElementById('katalog-container').innerHTML = '<div class="status-text" style="color:red;">Gagal memuat katalog.</div>'; }
         }
@@ -187,7 +203,9 @@
                 filtered = filtered.filter(p => keywords.every(kw => p.name.toLowerCase().includes(kw)));
             }
 
-            if (sortVal === 'cheap') filtered.sort((a, b) => Number(a.price) - Number(b.price)); 
+            if (sortVal === 'ready') filtered = filtered.filter(p => p.status === 'Ready');
+            else if (sortVal === 'presale') filtered = filtered.filter(p => p.status === 'Presale');
+            else if (sortVal === 'cheap') filtered.sort((a, b) => Number(a.price) - Number(b.price)); 
             else if (sortVal === 'expensive') filtered.sort((a, b) => Number(b.price) - Number(a.price)); 
 
             renderKatalog(filtered);
@@ -207,7 +225,9 @@
                 
                 const isHabis = produk.status === "Kosong"; const isPresale = produk.status === "Presale";
                 let badgeHtml = '';
-                if (isHabis) badgeHtml = '<div class="badge badge-habis">STOK HABIS</div>';  
+                
+                // PEMBARUAN LABEL MENJADI TERJUAL
+                if (isHabis) badgeHtml = '<div class="badge badge-habis">TERJUAL ✅</div>';  
                 else if (isPresale) badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; 
 
                 let thumbUrl = firstId.startsWith('http') ? firstId : (firstId ? `https://drive.google.com/thumbnail?id=${firstId}&sz=w300` : '');
@@ -251,7 +271,20 @@
             document.getElementById('modal-desc').innerText = produk.desc;
             
             let textWA = isPresale ? `Halo, saya tertarik ikut PRE-ORDER:\n\n*${produk.name.trim()}*\nHarga: ${hrg}\n\nBagaimana sistemnya?` : `Halo, saya mau pesan:\n\n*${produk.name.trim()}*\nHarga: ${hrg}`;
-            document.getElementById('modal-buy-btn').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
+            
+            const btnBuy = document.getElementById('modal-buy-btn');
+            
+            if (isPresale) {
+                btnBuy.href = "#"; 
+                btnBuy.onclick = function(e) {
+                    e.preventDefault(); 
+                    document.getElementById('alert-lanjut-wa').href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
+                    document.getElementById('custom-alert').style.display = 'flex'; 
+                };
+            } else {
+                btnBuy.href = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(textWA)}`;
+                btnBuy.onclick = null; 
+            }
             
             history.pushState({ state: 'modal_open' }, ''); modal.style.display = 'flex';
         }
@@ -273,8 +306,8 @@
 
         function closeModal() { history.back(); } function closeZoom() { history.back(); }
         window.addEventListener('popstate', function(e) {
-            if (!e.state) { modal.style.display = 'none'; zoomViewer.style.display = 'none'; document.getElementById('modal-slider').innerHTML = ''; document.getElementById('zoom-swiper-wrapper').innerHTML = ''; } 
-            else if (e.state.state === 'modal_open') { zoomViewer.style.display = 'none'; modal.style.display = 'flex'; document.getElementById('zoom-swiper-wrapper').innerHTML = ''; }
+            if (!e.state) { modal.style.display = 'none'; zoomViewer.style.display = 'none'; document.getElementById('modal-slider').innerHTML = ''; document.getElementById('zoom-swiper-wrapper').innerHTML = ''; document.getElementById('custom-alert').style.display = 'none';} 
+            else if (e.state.state === 'modal_open') { zoomViewer.style.display = 'none'; modal.style.display = 'flex'; document.getElementById('zoom-swiper-wrapper').innerHTML = ''; document.getElementById('custom-alert').style.display = 'none';}
         });
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
