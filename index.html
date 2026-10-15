@@ -98,8 +98,8 @@
         
         <select id="sortSelect" class="sort-select">
             <option value="new">🌟 Terbaru</option>
-            <option value="ready">✅ Tersedia Saja</option>
-            <option value="presale">⏳ Pre-sale Saja</option>
+            <option value="ready">✅ Tersedia</option>
+            <option value="presale">⏳ Pre-sale</option>
             <option value="cheap">⬇️ Harga Terendah</option>
             <option value="expensive">⬆️ Harga Tertinggi</option>
         </select>
@@ -168,7 +168,7 @@
         const db = firebase.firestore();
         const modal = document.getElementById('product-modal');
         const zoomViewer = document.getElementById('zoom-viewer');
-        const NOMOR_WA = "6281360171337"; 
+        const NOMOR_WA = "6285820146640"; 
         const formatRupiah = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka || 0);
         
         let allProducts = []; let currentZoomMedia = []; 
