@@ -32,7 +32,6 @@
         .card { background: #fff; border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.3s; position: relative; border: 1px solid #f0f0f0; display: flex; flex-direction: column;}
         .card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         
-        /* EFEK KABUR / SHIMMER LOADING PADA GAMBAR */
         .card-img-wrapper { position: relative; width: 100%; padding-top: 100%; background: #e5e5e5; overflow: hidden;}
         .card-img-wrapper img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s ease-in-out; opacity: 0;}
         
@@ -229,15 +228,17 @@
                 if (isHabis) badgeHtml = '<div class="badge badge-habis">TERJUAL ✅</div>';  
                 else if (isPresale) badgeHtml = '<div class="badge badge-presale">PRESALE</div>'; 
 
-                // Menggunakan link Google Drive dengan efek shimmer di wrapper
-                let thumbUrl = firstId.startsWith('http') ? firstId : (firstId ? `https://drive.google.com/thumbnail?id=${firstId}&sz=w400` : '');
+                // LOGIKA PINTAR: BACA LINK IMGBB ATAU ID GOOGLE DRIVE
+                let thumbUrl = firstId.startsWith('http') ? firstId : (firstId ? `https://drive.google.com/thumbnail?id=${firstId}&sz=w600` : '');
 
                 const card = document.createElement('div');
                 card.className = `card ${isHabis ? 'out-of-stock' : ''}`;
                 card.innerHTML = `
                     ${badgeHtml}
                     <div class="card-img-wrapper shimmer">
-                        <img src="${thumbUrl}" loading="lazy" onload="this.style.opacity=1; this.parentElement.classList.remove('shimmer');">
+                        <img src="${thumbUrl}" loading="lazy" 
+                             onload="this.style.opacity=1; this.parentElement.classList.remove('shimmer');"
+                             onerror="this.parentElement.classList.remove('shimmer'); this.style.opacity=1; this.src='https://placehold.co/400x400/eeeeee/999999?text=Gagal+Dimuat';">
                         ${mediaIds.length > 1 ? '<div class="badge-banyak-foto">Ada ' + mediaIds.length + ' Foto</div>' : ''}
                     </div>
                     <div class="card-content">
@@ -256,8 +257,10 @@
             
             mediaArray.forEach((fileId, index) => {
                 if(fileId) {
-                    let imgUrl = fileId.startsWith('http') ? fileId : `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
-                    sliderHtml += `<div class="swiper-slide shimmer"><img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy" onload="this.style.opacity=1; this.parentElement.classList.remove('shimmer')" style="opacity:0; transition:opacity 0.3s"></div>`;
+                    let imgUrl = fileId.startsWith('http') ? fileId : `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
+                    sliderHtml += `<div class="swiper-slide shimmer"><img src="${imgUrl}" onclick="openZoom(${index})" loading="lazy" 
+                                   onload="this.style.opacity=1; this.parentElement.classList.remove('shimmer')" 
+                                   onerror="this.parentElement.classList.remove('shimmer'); this.style.opacity=1; this.src='https://placehold.co/800x800/eeeeee/999999?text=Gambar+Gagal';" style="opacity:0; transition:opacity 0.3s"></div>`;
                 }
             });
             document.getElementById('modal-slider').innerHTML = sliderHtml;
@@ -293,7 +296,7 @@
             let zoomHtml = '';
             currentZoomMedia.forEach((fileId) => {
                 if(fileId) {
-                    let imgUrl = fileId.startsWith('http') ? fileId : `https://drive.google.com/thumbnail?id=${fileId}&sz=w2500`;
+                    let imgUrl = fileId.startsWith('http') ? fileId : `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
                     zoomHtml += `<div class="swiper-slide"><div class="swiper-zoom-container"><img src="${imgUrl}"></div></div>`;
                 }
             });
